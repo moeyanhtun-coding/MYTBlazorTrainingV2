@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer;
 using MYTBlazorTraining.WebApi.Models;
+using MYTBlazorTraining.WebApi.Services;
 namespace MYTBlazorTraining.WebApi.Db
 {
     public class AppDbContext : DbContext
