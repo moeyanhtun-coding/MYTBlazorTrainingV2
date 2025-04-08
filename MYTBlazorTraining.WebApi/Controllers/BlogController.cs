@@ -9,11 +9,7 @@ namespace MYTBlazorTraining.WebApi.Controllers
     [ApiController]
     public class BlogController : ControllerBase
     {
-        private readonly AppDbContext _db;
-        public BlogController()
-        {
-            _db = new AppDbContext();
-        }
+        private readonly AppDbContext _db = new();
 
         [HttpGet]
         public IActionResult Read()
