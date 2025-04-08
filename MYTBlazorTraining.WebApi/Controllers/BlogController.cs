@@ -39,5 +39,17 @@ namespace MYTBlazorTraining.WebApi.Controllers
             string message = result > 0 ? "Blog Created" : "Blog Not Created";
             return Ok(message);
         }
+        
+        [HttpDelete("{id}")]
+        public IActionResult BlogCreate(int BlogId)
+        {
+            var blog = _db.Blogs.FirstOrDefault(x => x.BlogId == BlogId);
+            if (blog is null)
+                return NotFound("Blog Not Found");
+            _db.Remove(blog);
+            int result = _db.SaveChanges();
+            string message = result > 0 ? "Blog Delete Successful" : "Blog Delete Failed";
+            return Ok(message);
+        }
     }
 }
