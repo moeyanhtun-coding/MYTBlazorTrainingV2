@@ -28,7 +28,7 @@ namespace MYTBlazorTraining.WebApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult BlogCreate([FromBody] BlogModel blogModel)
+        public IActionResult BlogCreate([FromForm] BlogModel blogModel)
         {
             _db.Add(blogModel);
             int result = _db.SaveChanges();
@@ -37,7 +37,7 @@ namespace MYTBlazorTraining.WebApi.Controllers
         }
 
         [HttpPatch("{id}")]
-        public IActionResult BlogUpdate(int id, [FromBody] BlogModel blogModel)
+        public IActionResult BlogUpdate(int id, [FromForm] BlogModel blogModel)
         {
             var blog = _db.Blogs.FirstOrDefault(x => x.BlogId == id);
             if (blog is null)
