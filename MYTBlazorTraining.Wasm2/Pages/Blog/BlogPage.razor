@@ -2,42 +2,90 @@
 <PageTitle>Blog List</PageTitle>
 
 <h1>Blog List</h1>
-<NavLink href="/blog/create" class="btn btn-primary">Blog Create</NavLink>
+<div>
+    <NavLink href="/blog/create" class="btn btn-primary">Blog Create</NavLink>
+</div>
 
 @if (_blogModel is null)
 {
-    <p><em>Loading...</em></p>
+    <div class="d-flex flex-column justify-content-center align-items-center vh-60">
+        <div class="spinner-border text-warning mb-4" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div>
+            <h5>Loading ... </h5>
+        </div>
+    </div>
 }
 else
 {
-    <table class="table">
+    <table class="table table-hover">
         <thead>
-        <tr>
-            <th>Blog Id</th>
-            <th>Blog Title</th>
-            <th>Blog Author</th>
-            <th>Blog Content</th>
-        </tr>
+            <tr>
+                <th>Blog Id</th>
+                <th>Blog Title</th>
+                <th>Blog Author</th>
+                <th>Blog Content</th>
+                <th></th>
+            </tr>
         </thead>
         <tbody>
-        @foreach (var item in _blogModel)
-        {
-            <tr>
-                <td>@item.BlogId</td>
-                <td>@item.BlogTitle</td>
-                <td>@item.BlogAuthor</td>
-                <td>@item.BlogContent</td>
-            </tr>
-        }
+            @foreach (var item in _blogModel)
+            {
+                var editUrl = $"/blog/edit/{item.BlogId}";
+                <tr>
+                    <td>@item.BlogId</td>
+                    <td>@item.BlogTitle</td>
+                    <td>@item.BlogAuthor</td>
+                    <td>@item.BlogContent</td>
+                    <td><NavLink href="@editUrl" class="btn btn-outline-warning">Edit</NavLink></td>
+                    <td><button class="btn btn-outline-danger" @onclick="() => Delete(item.BlogId)">Delete</button></td>
+                </tr>
+            }
         </tbody>
     </table>
 }
 
-@code{
+<div class="modal fade" tabindex="-1" role="dialog" id="confirmDeleteModal" @ref="_modalRef">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this blog?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" @onclick="ConfirmDelete">Yes</button>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-    private List<BlogModel> _blogModel;
+@code {
+
+    private List<BlogModel>? _blogModel = null;
+    private ElementReference _modalRef;
+    private int _blogIdToDelete;
+    private IJSObjectReference? _bootstrapModule;
+
+    [Inject] private IJSRuntime JS { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
+    {
+       await GetBlogs();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _bootstrapModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/bootstrap-helper.js");
+        }
+    }
+
+    private async Task GetBlogs()
     {
         var response = await httpClient.GetAsync("/api/Blog");
         if (response.IsSuccessStatusCode)
@@ -46,12 +94,27 @@ else
             _blogModel = JsonConvert.DeserializeObject<List<BlogModel>>(jsonStr)!;
         }
     }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private async Task Delete(int id)
     {
-        if (firstRender)
+        _blogIdToDelete = id;
+        if (_bootstrapModule is not null)
         {
-            // Logic to execute after the component has rendered
+            await _bootstrapModule.InvokeVoidAsync("showModal", "#confirmDeleteModal");
         }
     }
+
+    private async Task ConfirmDelete()
+    {
+        if (_bootstrapModule is not null)
+        {
+            await _bootstrapModule.InvokeVoidAsync("hideModal", "#confirmDeleteModal");
+        }
+
+        var response = await httpClient.DeleteAsync($"api/blog/{_blogIdToDelete}");
+        if (response.IsSuccessStatusCode)
+        {
+            await GetBlogs();
+        }
+    }
+
 }
