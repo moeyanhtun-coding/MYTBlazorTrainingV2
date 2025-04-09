@@ -1,0 +1,76 @@
+﻿@page "/blog/edit/{id:int}"
+@using System.Text
+@using System.Net.Mime
+
+<PageTitle>Blog Edit</PageTitle>
+<h2>Blog Edit Form</h2>
+
+@if (_blog is not null)
+{
+    <div class="row">
+        <div class="col-6 offset-3">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="blogTitle" placeholder="Blog Title" @bind-value="_blog!.BlogTitle">
+                <label for="blogTitle">Blog Title</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="blogAuthor" placeholder="Blog Author" @bind-value="_blog.BlogAuthor">
+                <label for="blogAuthor">Blog Author</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="blogContent" placeholder="Blog Content" @bind-value="_blog.BlogContent">
+                <label for="blogContent">Blog Content</label>
+            </div>
+            <a href="/blog" class="btn btn-outline-dark">Back</a>
+            <button type="button" class="btn btn-primary" @onclick="Update">Update Blog</button>
+
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+
+    private BlogModel? _blog;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await httpClient.GetAsync($"api/blog/{id}");
+        if (!response.IsSuccessStatusCode)
+        {
+            nav.NavigateTo("/blog");
+        }
+        var jsonStr = await response.Content.ReadAsStringAsync();
+        _blog = JsonConvert.DeserializeObject<BlogModel>(jsonStr)!;
+    }
+
+    private async Task Update()
+    {
+        var jonBlog = JsonConvert.SerializeObject(_blog);
+        var content = new StringContent(jonBlog, Encoding.UTF8, MediaTypeNames.Application.Json);
+        var response = await httpClient.PatchAsync($"api/blog/{id}", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var jsonStr = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(jsonStr);
+            nav.NavigateTo("/blog");
+        }
+    }
+
+    private async Task Save()
+    {
+        var jsonBlog = JsonConvert.SerializeObject(_blog);
+        var content = new StringContent(jsonBlog, Encoding.UTF8, MediaTypeNames.Application.Json);
+        var response = await httpClient.PostAsync("api/Blog", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var jsonStr = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(jsonStr);
+            nav.NavigateTo("/blog");
+        }
+    }
+}
