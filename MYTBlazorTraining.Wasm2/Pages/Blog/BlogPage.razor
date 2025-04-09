@@ -1,19 +1,52 @@
 ﻿@page "/blog"
+@using Newtonsoft.Json
 @inject HttpClient httpClient
 
 <PageTitle>Blog List</PageTitle>
 
 <h1>Blog </h1>
 
+@if (_blogModel is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Blog Id</th>
+            <th>Blog Title</th>
+            <th>Blog Author</th>
+            <th>Blog Content</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in _blogModel)
+        {
+            <tr>
+                <td>@item.BlogId</td>
+                <td>@item.BlogTitle</td>
+                <td>@item.BlogAuthor</td>
+                <td>@item.BlogContent</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
 @code{
+
+    private List<BlogModel> _blogModel;
+
     protected override async Task OnInitializedAsync()
     {
-       var response = await httpClient.GetAsync("/api/Blog");
-       if (response.IsSuccessStatusCode)
-       {
-           var jsonStr = response.Content.ReadAsStringAsync();
-           Console.WriteLine(jsonStr);
-       }
+        var response = await httpClient.GetAsync("/api/Blog");
+        if (response.IsSuccessStatusCode)
+        {
+            var jsonStr = await response.Content.ReadAsStringAsync();
+            _blogModel = JsonConvert.DeserializeObject<List<BlogModel>>(jsonStr)!;
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -23,4 +56,13 @@
             // Logic to execute after the component has rendered
         }
     }
+
+    public class BlogModel
+    {
+        public int BlogId { get; set; }
+        public string BlogTitle { get; set; }
+        public string BlogAuthor { get; set; }
+        public string BlogContent { get; set; }
+    }
+
 }
