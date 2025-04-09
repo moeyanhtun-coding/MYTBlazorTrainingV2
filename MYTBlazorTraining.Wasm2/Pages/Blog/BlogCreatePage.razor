@@ -19,6 +19,7 @@
             <input type="text" class="form-control" id="blogContent" placeholder="Blog Content" @bind-value="_blog.BlogContent">
             <label for="blogContent">Blog Content</label>
         </div>
+        <a href="/blog" class="btn btn-outline-dark">Back</a>
         <button type="button" class="btn btn-success" @onclick="Save">Create Blog</button>
     </div>
 </div>
@@ -31,7 +32,7 @@
         var jsonBlog = JsonConvert.SerializeObject(_blog);
         var content = new StringContent(jsonBlog, Encoding.UTF8, MediaTypeNames.Application.Json);
         var response = await httpClient.PostAsync("api/Blog", content);
-        
+
         if (response.IsSuccessStatusCode)
         {
             var jsonStr = await response.Content.ReadAsStringAsync();
