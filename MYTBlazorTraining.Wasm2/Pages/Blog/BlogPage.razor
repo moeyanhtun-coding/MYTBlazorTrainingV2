@@ -1,0 +1,26 @@
+﻿@page "/blog"
+@inject HttpClient httpClient
+
+<PageTitle>Blog List</PageTitle>
+
+<h1>Blog </h1>
+
+@code{
+    protected override async Task OnInitializedAsync()
+    {
+       var response = await httpClient.GetAsync("/api/Blog");
+       if (response.IsSuccessStatusCode)
+       {
+           var jsonStr = response.Content.ReadAsStringAsync();
+           Console.WriteLine(jsonStr);
+       }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Logic to execute after the component has rendered
+        }
+    }
+}
