@@ -1,0 +1,33 @@
+﻿@page "/blog/create"
+<h3>BlogCreatePage</h3>
+<PageTitle>Blog Create</PageTitle>
+
+<div class="row">
+    <div class="col-6 offset-3">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="blogTitle" placeholder="Blog Title" @bind-value="_blog.BlogTitle">
+            <label for="blogTitle">Blog Title</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="blogAuthor" placeholder="Blog Author" @bind-value="_blog.BlogAuthor">
+            <label for="blogAuthor">Blog Author</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="blogContent" placeholder="Blog Content" @bind-value="_blog.BlogContent">
+            <label for="blogContent">Blog Content</label>
+        </div>
+        <a href="/blog" class="btn btn-outline-dark">Back</a>
+        <button type="button" class="btn btn-primary" @onclick="@Create">Create Blog</button>
+    </div>
+</div>
+
+@code {
+    private BlogModel _blog = new();
+    private async Task Create()
+    {
+        await _db.Blogs.AddAsync(_blog);
+        await _db.SaveChangesAsync();
+        nav.NavigateTo("/blog");
+    }
+
+}
