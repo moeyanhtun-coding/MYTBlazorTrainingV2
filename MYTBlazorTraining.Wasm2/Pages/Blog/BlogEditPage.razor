@@ -35,15 +35,19 @@
 
     private BlogModel? _blog;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var response = await httpClient.GetAsync($"api/blog/{id}");
-        if (!response.IsSuccessStatusCode)
+        if (firstRender)
         {
-            nav.NavigateTo("/blog");
+            var response = await httpClient.GetAsync($"api/blog/{id}");
+            if (!response.IsSuccessStatusCode)
+            {
+                nav.NavigateTo("/blog");
+            }
+            var jsonStr = await response.Content.ReadAsStringAsync();
+            _blog = JsonConvert.DeserializeObject<BlogModel>(jsonStr)!;
+            StateHasChanged();
         }
-        var jsonStr = await response.Content.ReadAsStringAsync();
-        _blog = JsonConvert.DeserializeObject<BlogModel>(jsonStr)!;
     }
 
     private async Task Update()
