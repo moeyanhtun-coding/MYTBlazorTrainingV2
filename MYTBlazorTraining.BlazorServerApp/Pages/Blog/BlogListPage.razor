@@ -63,7 +63,7 @@
 
     private async Task ReadBlogs()
     {
-        _blogs = await _db.Blogs.ToListAsync();
+        _blogs = await _db.Blogs.OrderByDescending(p => p.BlogId).ToListAsync();
     }
 
     private async Task Delete(int id)
