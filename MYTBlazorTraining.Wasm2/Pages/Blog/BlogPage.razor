@@ -1,4 +1,5 @@
 ﻿@page "/blog"
+@inject IJSRuntime JS
 <PageTitle>Blog List</PageTitle>
 
 <h1>Blog List</h1>
@@ -38,8 +39,9 @@ else
                     <td>@item.BlogTitle</td>
                     <td>@item.BlogAuthor</td>
                     <td>@item.BlogContent</td>
-                    <td><NavLink href="@editUrl" class="btn btn-outline-warning">Edit</NavLink></td>
-                    <td><button class="btn btn-outline-danger" @onclick="() => Delete(item.BlogId)">Delete</button></td>
+                    <td><NavLink href="@editUrl" class="btn btn-outline-warning">Edit</NavLink>
+                        <button class="btn btn-outline-danger" @onclick="() => Delete(item.BlogId)">Delete</button>
+                        </td>
                 </tr>
             }
         </tbody>
@@ -70,8 +72,6 @@ else
     private ElementReference _modalRef;
     private int _blogIdToDelete;
     private IJSObjectReference? _bootstrapModule;
-
-    [Inject] private IJSRuntime JS { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
