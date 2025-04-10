@@ -1,0 +1,68 @@
+﻿@page "/blog"
+@inject AppDbContext _db
+<PageTitle>Blog List Page</PageTitle>
+<h3>BlogListPage</h3>
+
+@if(_blogs is null)
+{
+    <div class="d-flex flex-column justify-content-center align-items-center vh-60">
+        <div class="spinner-border text-warning mb-4" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div>
+            <h5>Loading ... </h5>
+        </div>
+    </div>
+}else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Blog Id</th>
+                <th>Blog Title</th>
+                <th>Blog Author</th>
+                <th>Blog Content</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _blogs)
+            {
+                @* var editUrl = $"/blog/edit/{item.BlogId}"; *@
+                <tr>
+                    <td>@item.BlogId</td>
+                    <td>@item.BlogTitle</td>
+                    <td>@item.BlogAuthor</td>
+                    <td>@item.BlogContent</td>
+                    <td>
+                        @* <NavLink href="@editUrl" class="btn btn-outline-warning">Edit</NavLink> *@
+                        @* <button class="btn btn-outline-danger" @onclick="() => Delete(item.BlogId)">Delete</button> *@
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<BlogModel>? _blogs;
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _blogs = await _db.Blogs.AsNoTracking().ToListAsync();
+            StateHasChanged();
+        }
+    }
+
+    private async Task ReadBlogs()
+    {
+        
+    }
+
+}
