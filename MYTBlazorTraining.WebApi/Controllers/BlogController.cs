@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MYTBlazorTraining.WebApi.Db;
 using MYTBlazorTraining.WebApi.Models;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MYTBlazorTraining.WebApi.Controllers
@@ -14,9 +15,9 @@ namespace MYTBlazorTraining.WebApi.Controllers
         private readonly AppDbContext _db = new();
 
         [HttpGet]
-        public IActionResult Read()
+        public async Task<IActionResult> Read()
         {
-            var blogs = _db.Blogs.ToList();
+            var blogs =await _db.Blogs.OrderByDescending(x=>x.BlogId).ToListAsync();
             return Ok(blogs);
         }
 
