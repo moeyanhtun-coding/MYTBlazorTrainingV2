@@ -1,7 +1,8 @@
 ﻿@page "/blog"
-@inject AppDbContext _db
 <PageTitle>Blog List Page</PageTitle>
 <h3>BlogListPage</h3>
+
+<NavLink href="/blog/create" class="btn btn-success">Create Blog</NavLink>
 
 @if(_blogs is null)
 {
@@ -28,15 +29,15 @@
         <tbody>
             @foreach (var item in _blogs)
             {
-                @* var editUrl = $"/blog/edit/{item.BlogId}"; *@
+                var editUrl = $"/blog/edit/{item.BlogId}";
                 <tr>
                     <td>@item.BlogId</td>
                     <td>@item.BlogTitle</td>
                     <td>@item.BlogAuthor</td>
                     <td>@item.BlogContent</td>
                     <td>
-                        @* <NavLink href="@editUrl" class="btn btn-outline-warning">Edit</NavLink> *@
-                        @* <button class="btn btn-outline-danger" @onclick="() => Delete(item.BlogId)">Delete</button> *@
+                        <NavLink href="@editUrl" class="btn btn-outline-warning">Edit</NavLink>
+                        <button class="btn btn-outline-danger" @onclick="() => Delete(item.BlogId)">Delete</button>
                     </td>
                 </tr>
             }
@@ -55,14 +56,26 @@
     {
         if (firstRender)
         {
-            _blogs = await _db.Blogs.AsNoTracking().ToListAsync();
+            await ReadBlogs();
             StateHasChanged();
         }
     }
 
     private async Task ReadBlogs()
     {
-        
+        _blogs = await _db.Blogs.ToListAsync();
     }
 
+    private async Task Delete(int id)
+    {
+        var blog = await _db.Blogs
+        .FirstOrDefaultAsync(x => x.BlogId == id);
+        if (blog is null)
+            return;
+        bool confirmed = await jSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete?");
+        if (!confirmed) return;
+        _db.Blogs.Remove(blog);
+        await _db.SaveChangesAsync();
+        await ReadBlogs();
+    }
 }
