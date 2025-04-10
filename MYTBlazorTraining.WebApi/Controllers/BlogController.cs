@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MYTBlazorTraining.WebApi.Db;
 using MYTBlazorTraining.WebApi.Models;
+using System.Threading.Tasks;
 
 namespace MYTBlazorTraining.WebApi.Controllers
 {
@@ -19,44 +21,46 @@ namespace MYTBlazorTraining.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult BlogEdit(int id)
+        public async Task<IActionResult> BlogEdit(int id)
         {
-            var blog = _db.Blogs.FirstOrDefault(x => x.BlogId == id);
+            var blog =  await _db.Blogs.AsNoTracking().FirstOrDefaultAsync(x => x.BlogId == id);
             if (blog is null)
                 return NotFound("Blog Not Found");
             return Ok(blog);
         }
 
         [HttpPost]
-        public IActionResult BlogCreate(BlogModel blogModel)
+        public async Task<IActionResult> BlogCreate(BlogModel blogModel)
         {
-            _db.Add(blogModel);
-            int result = _db.SaveChanges();
+           await _db.Blogs.AddAsync(blogModel);
+            int result = await _db.SaveChangesAsync();
             string message = result > 0 ? "Blog Created" : "Blog Not Created";
             return Ok(message);
         }
 
         [HttpPatch("{id}")]
-        public IActionResult BlogUpdate(int id, BlogModel blogModel)
+        public async Task<IActionResult> BlogUpdate(int id, BlogModel blogModel)
         {
-            var blog = _db.Blogs.FirstOrDefault(x => x.BlogId == id);
+            var blog = _db.Blogs.AsNoTracking().FirstOrDefault(x => x.BlogId == id);
             if (blog is null)
                 return NotFound("Blog Not Found");
             blog.BlogTitle = blogModel.BlogTitle;
             blog.BlogAuthor = blogModel.BlogAuthor;
             blog.BlogContent = blogModel.BlogContent;
-            _db.SaveChanges();
+            _db.Blogs.Entry(blog).State = EntityState.Modified;
+            await _db.SaveChangesAsync();
             return Ok("Blog Updated");
         }
 
         [HttpDelete("{id}")]
-        public IActionResult BlogDelete(int id)
+        public async Task<IActionResult> BlogDelete(int id)
         {
-            var blog = _db.Blogs.FirstOrDefault(x => x.BlogId == id);
+            var blog = await _db.Blogs.AsNoTracking().FirstOrDefaultAsync(x => x.BlogId == id);
             if (blog is null)
                 return NotFound("Blog Not Found");
             _db.Remove(blog);
-            int result = _db.SaveChanges();
+            _db.Entry(blog).State = EntityState.Deleted;
+            int result = await _db.SaveChangesAsync();
             string message = result > 0 ? "Blog Delete Successful" : "Blog Delete Failed";
             return Ok(message);
         }
