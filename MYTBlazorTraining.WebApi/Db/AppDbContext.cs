@@ -1,15 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer;
-using MYTBlazorTraining.WebApi.Models;
-using MYTBlazorTraining.WebApi.Services;
 namespace MYTBlazorTraining.WebApi.Db
 {
     public class AppDbContext : DbContext
     {
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public AppDbContext(DbContextOptions options) : base(options)
         {
-            optionsBuilder.UseSqlServer(ConnectionStrings.sqlConnectionStringBuilder.ConnectionString);
         }
-        public DbSet<BlogModel> Blogs { get; set; }
+
+        protected AppDbContext()
+        {
+        }
+
+        public DbSet<TblBlog> Blogs { get; set; }
+        public DbSet<TblUser> Users { get; set; }
     }
 }
