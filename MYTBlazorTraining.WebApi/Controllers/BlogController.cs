@@ -15,17 +15,17 @@ namespace MYTBlazorTraining.WebApi.Controllers
 
     public class BlogController : ControllerBase
     {
-        private readonly IBlog _Iblog;
+        private readonly IBlog _blog;
 
         public BlogController(IBlog iblog)
         {
-            _Iblog = iblog;
+            _blog = iblog;
         }
 
         [HttpGet("list")]
         public async Task<ActionResult<BlogListResponseModel>> GetBlogList()
         {
-            var result = await _Iblog.GetBlogListAsync();
+            var result = await _blog.GetBlogListAsync();
             if (result.Success)
                 return Ok(result);
             return BadRequest(result);
@@ -34,7 +34,7 @@ namespace MYTBlazorTraining.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<BlogEditResponseModel>> GetBlog(int id)
         {
-            var result = await _Iblog.GetBlogByIdAsync(id);
+            var result = await _blog.GetBlogByIdAsync(id);
             if (result.Success)
                 return Ok(result);
             return BadRequest(result);
@@ -43,7 +43,7 @@ namespace MYTBlazorTraining.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<BlogCreateResponseModel>> CreateBlog(BlogModel blogModel)
         {
-            var result = await _Iblog.CreateBlogAsync(blogModel);
+            var result = await _blog.CreateBlogAsync(blogModel);
             if (result.Success)
                 return Ok(result);
             return BadRequest(result);
@@ -52,7 +52,7 @@ namespace MYTBlazorTraining.WebApi.Controllers
         [HttpPatch("{id}")]
         public async Task<ActionResult<BlogUpdateResponseModel>> UpdateBlog(int id, BlogModel blogModel)
         {
-            var result = await _Iblog.UpdateBlogAsync(id, blogModel);
+            var result = await _blog.UpdateBlogAsync(id, blogModel);
             if (result.Success)
                 return Ok(result);
             return BadRequest(result);
@@ -61,7 +61,7 @@ namespace MYTBlazorTraining.WebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<BlogDeleteResponseModel>> DeleteBlog(int id)
         {
-            var result = await _Iblog.DeleteBlogAsync(id);
+            var result = await _blog.DeleteBlogAsync(id);
             if (result.Success)
                 return Ok(result);
             return BadRequest(result);
