@@ -12,6 +12,7 @@ namespace MYTBlazorTraining.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
 
     public class BlogController : ControllerBase
     {
@@ -23,6 +24,7 @@ namespace MYTBlazorTraining.WebApi.Controllers
         }
 
         [HttpGet("list")]
+
         public async Task<ActionResult<BlogListResponseModel>> GetBlogList()
         {
             var result = await _blog.GetBlogListAsync();
