@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MYTBlazorTraining.WebApi.Db
 {
-    [Table("Tbl_Users")]
+    [Table("Tbl_User")]
     public class TblUser
     {
         [Key]
