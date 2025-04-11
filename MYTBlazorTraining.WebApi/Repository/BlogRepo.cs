@@ -86,7 +86,7 @@ namespace MYTBlazorTraining.WebApi.Repository
         private async Task<TblBlog> FindBlogByIdAsync(int id)
         {
             var blog = await _context.Blogs.AsNoTracking().FirstOrDefaultAsync(x => x.BlogId == id)!;
-            if (blog is null) return null;
+            if (blog is null) return null!;
             return blog;
         }
     }
